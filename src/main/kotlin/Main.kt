@@ -1,5 +1,5 @@
 package klev
 
 fun main() {
-    println("Hello World!")
+    println(`1`.print())
 }
