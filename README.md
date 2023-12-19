@@ -22,3 +22,6 @@ Celebrate the holiday season with this festive repository! Spread the joy of cod
 
 ### Contributing
 If you have more Christmas-themed ASCII art or want to add festive features, contributions are more than welcome! Fork the repository, create a new branch for your changes, and submit a pull request.
+
+### License
+This Christmas repository is licensed under the [MIT License](https://github.com/torland-klev/advent-of-code-2023/blob/main/LICENSE). Spread the holiday spirit responsibly!
