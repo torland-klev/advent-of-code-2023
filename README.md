@@ -2,7 +2,7 @@
 
 Celebrate the holiday season with this festive repository! Spread the joy of coding and Christmas cheer!
 ```
-     ____
+     ____ 
    {} _  \
       |__ \
      /_____\
