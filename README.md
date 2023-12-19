@@ -20,5 +20,5 @@ Celebrate the holiday season with this festive repository! Spread the joy of cod
    |___/ |___/
 ```
 
-## Contributing
+### Contributing
 If you have more Christmas-themed ASCII art or want to add festive features, contributions are more than welcome! Fork the repository, create a new branch for your changes, and submit a pull request.
