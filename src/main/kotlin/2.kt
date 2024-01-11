@@ -39,13 +39,12 @@ object `2` : Day {
         }
     }
 
-    override fun firstSolution(): String {
-        return splitInput().map {
+    override fun firstSolution(input: List<String>) =
+        input.map {
             it.toGame()
         }.filter {
             it.rounds.all { it.red <= 12 && it.green <= 13 && it.blue <= 14 }
         }.sumOf { it.id }.toString()
-    }
 
     override fun secondSolution(input: List<String>): String {
         return splitInput().map {

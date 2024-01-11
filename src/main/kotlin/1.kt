@@ -1,8 +1,8 @@
 package klev
 
 object `1` : Day {
-    override fun firstSolution() =
-        splitInput().sumOf { line ->
+    override fun firstSolution(input: List<String>) =
+        input.sumOf { line ->
             line.filter {
                     c ->
                 c.isDigit()

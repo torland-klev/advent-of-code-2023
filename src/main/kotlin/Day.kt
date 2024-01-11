@@ -3,7 +3,7 @@ package klev
 interface Day {
     fun input(): String
 
-    fun firstSolution(): String
+    fun firstSolution(input: List<String> = splitInput()): String
 
     fun secondSolution(input: List<String> = splitInput()): String
 
