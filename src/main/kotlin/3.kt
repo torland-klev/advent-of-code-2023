@@ -2,7 +2,7 @@ package klev
 
 object `3` : Day {
     override fun firstSolution(input: List<String>): String {
-        val numbers = mutableListOf<Int>()
+        val numbers = mutableListOf<Long>()
         input.forEachIndexed { rowI, it ->
             var i = 0
             while (i < it.length) {
@@ -18,7 +18,7 @@ object `3` : Day {
                     val hasSymbolAdjacent = numberStart > 0 && !it[numberStart-1].isDigit() && it[numberStart - 1] != '.' || numberStop < it.length - 1 && !it[numberStop+1].isDigit() && it[numberStop + 1] != '.'
                     val hasSymbolBelow = rowI < input.size - 1 && input[rowI + 1].substring((if (numberStart > 0) numberStart - 1 else 0)..(if (numberStop < input[rowI + 1].length - 1) numberStop + 1 else numberStop)).contains(Regex("[^0-9.]"))
                     if (hasSymbolAbove || hasSymbolAdjacent || hasSymbolBelow) {
-                        numbers.add(it.substring(numberStart..numberStop).toInt())
+                        numbers.add(it.substring(numberStart..numberStop).toLong())
                     }
                     i = lookAheadI
                 } else {
@@ -30,7 +30,176 @@ object `3` : Day {
     }
 
     override fun secondSolution(input: List<String>): String {
-        TODO("Not yet implemented")
+        val numbers = mutableListOf<Long>()
+        input.forEachIndexed { rowI, row ->
+            var i = 0
+            while (i < row.length) {
+                if (row[i] == '*') {
+                    var wasTwoAbove = false
+                    var wasTwoBelow = false
+                    val numberAbove =
+                        run {
+                            if (rowI <= 0) {
+                                0L
+                            } else {
+                                val aboveRow = input[rowI - 1]
+                                if (aboveRow[i].isDigit()) {
+                                    var index = i + 1
+                                    var number = aboveRow[i].toString()
+                                    while (index < aboveRow.length && aboveRow[index].isDigit()) {
+                                        number += aboveRow[index]
+                                        index++
+                                    }
+                                    index = i - 1
+                                    while (index >= 0 && aboveRow[index].isDigit()) {
+                                        number = aboveRow[index] + number
+                                        index--
+                                    }
+                                    number.toLong()
+                                } else if (i < aboveRow.length - 1 && aboveRow[i + 1].isDigit() && i > 0 && aboveRow[i - 1].isDigit()) {
+                                    wasTwoAbove = true
+                                    var index = i + 1
+                                    var number1 = ""
+                                    while (index < aboveRow.length && aboveRow[index].isDigit()) {
+                                        number1 += aboveRow[index]
+                                        index++
+                                    }
+                                    index = i - 1
+                                    var number2 = ""
+                                    while (index >= 0 && aboveRow[index].isDigit()) {
+                                        number2 = aboveRow[index] + number2
+                                        index--
+                                    }
+                                    number1.toLong() * number2.toLong()
+                                } else if (i < aboveRow.length - 1 && aboveRow[i + 1].isDigit()) {
+                                    var index = i + 1
+                                    var number = ""
+                                    while (index < aboveRow.length && aboveRow[index].isDigit()) {
+                                        number += aboveRow[index]
+                                        index++
+                                    }
+                                    if (number.isBlank()) 0L else number.toLong()
+                                } else if (i > 0 && aboveRow[i - 1].isDigit()) {
+                                    var index = i - 1
+                                    var number = ""
+                                    while (index >= 0 && aboveRow[index].isDigit()) {
+                                        number = aboveRow[index] + number
+                                        index--
+                                    }
+                                    if (number.isBlank()) 0L else number.toLong()
+                                } else {
+                                    0L
+                                }
+                            }
+                        }
+                    val numberLeft =
+                        run {
+                            var index = i - 1
+                            var number = ""
+                            while (index >= 0 && row[index].isDigit()) {
+                                number = row[index] + number
+                                index--
+                            }
+                            if (number.isBlank()) 0L else number.toLong()
+                        }
+                    val numberRight =
+                        run {
+                            var index = i + 1
+                            var number = ""
+                            while (index < row.length && row[index].isDigit()) {
+                                number += row[index]
+                                index++
+                            }
+                            if (number.isBlank()) 0L else number.toLong()
+                        }
+                    val numberBelow =
+                        run {
+                            if (rowI >= input.size - 1) {
+                                0L
+                            } else {
+                                val belowRow = input[rowI + 1]
+                                if (belowRow[i].isDigit()) {
+                                    var index = i + 1
+                                    var number = belowRow[i].toString()
+                                    while (index < belowRow.length && belowRow[index].isDigit()) {
+                                        number += belowRow[index]
+                                        index++
+                                    }
+                                    index = i - 1
+                                    while (index >= 0 && belowRow[index].isDigit()) {
+                                        number = belowRow[index] + number
+                                        index--
+                                    }
+                                    number.toLong()
+                                } else if (i < belowRow.length - 1 && belowRow[i + 1].isDigit() && i > 0 && belowRow[i - 1].isDigit()) {
+                                    wasTwoBelow = true
+                                    var index = i + 1
+                                    var number1 = ""
+                                    while (index < belowRow.length && belowRow[index].isDigit()) {
+                                        number1 += belowRow[index]
+                                        index++
+                                    }
+                                    index = i - 1
+                                    var number2 = ""
+                                    while (index >= 0 && belowRow[index].isDigit()) {
+                                        number2 = belowRow[index] + number2
+                                        index--
+                                    }
+                                    number1.toLong() * number2.toLong()
+                                } else if (i < belowRow.length - 1 && belowRow[i + 1].isDigit()) {
+                                    var index = i + 1
+                                    var number = ""
+                                    while (index < belowRow.length && belowRow[index].isDigit()) {
+                                        number += belowRow[index]
+                                        index++
+                                    }
+                                    if (number.isBlank()) 0L else number.toLong()
+                                } else if (i > 0 && belowRow[i - 1].isDigit()) {
+                                    var index = i - 1
+                                    var number = ""
+                                    while (index >= 0 && belowRow[index].isDigit()) {
+                                        number = belowRow[index] + number
+                                        index--
+                                    }
+                                    if (number.isBlank()) 0L else number.toLong()
+                                } else {
+                                    0L
+                                }
+                            }
+                        }
+
+                    var numNumbers = 0
+                    if (numberAbove > 0) {
+                        if (wasTwoAbove) {
+                            numNumbers += 2
+                        } else {
+                            numNumbers++
+                        }
+                    }
+                    if (numberBelow > 0) {
+                        if (wasTwoBelow) {
+                            numNumbers += 2
+                        } else {
+                            numNumbers++
+                        }
+                    }
+                    if (numberLeft > 0) numNumbers++
+                    if (numberRight > 0) numNumbers++
+
+                    if (numNumbers == 2) {
+                        numbers.add(
+                            (
+                                numberAbove.takeIf {
+                                    it > 0
+                                } ?: 1L
+                            ) * (numberBelow.takeIf { it > 0 } ?: 1L) * (numberLeft.takeIf { it > 0 } ?: 1L) * (numberRight.takeIf { it > 0 } ?: 1L),
+                        )
+                    }
+                }
+                i++
+            }
+        }
+        return numbers.sum().toString()
     }
 
     override fun input() =
