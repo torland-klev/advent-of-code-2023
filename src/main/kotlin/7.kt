@@ -5,22 +5,25 @@ object `7` : Day {
         val hand: String,
         val bid: Long,
         val counts: Map<Int, Int>,
+        val originalHand: String = hand,
     ) {
-        constructor(hand: String, bid: Long) : this(
-            hand,
-            bid,
-            hand.let {
-                hand.map { card -> card to hand.count { it == card } }.toSet().toMap().map {
-                    when (it.key) {
-                        'A' -> 14
-                        'K' -> 13
-                        'Q' -> 12
-                        'J' -> 11
-                        'T' -> 10
-                        else -> it.key.digitToInt()
-                    } to it.value
-                }.toMap()
-            },
+        constructor(hand: String, bid: Long, originalHand: String = hand) : this(
+            hand = hand,
+            bid = bid,
+            counts =
+                hand.let {
+                    hand.map { card -> card to hand.count { it == card } }.toSet().toMap().map {
+                        when (it.key) {
+                            'A' -> 14
+                            'K' -> 13
+                            'Q' -> 12
+                            'J' -> 11
+                            'T' -> 10
+                            else -> it.key.digitToInt()
+                        } to it.value
+                    }.toMap()
+                },
+            originalHand = originalHand,
         )
 
         fun type(): Type {
@@ -56,12 +59,22 @@ object `7` : Day {
         HIGH_CARD(1),
     }
 
-    private fun Char.cardToScore() =
+    private fun Char.cardToScoreFirstSolution() =
         when (this) {
             'A' -> 14
             'K' -> 13
             'Q' -> 12
             'J' -> 11
+            'T' -> 10
+            else -> digitToInt()
+        }
+
+    private fun Char.cardToScoreSecondSolution() =
+        when (this) {
+            'A' -> 14
+            'K' -> 13
+            'Q' -> 12
+            'J' -> 1
             'T' -> 10
             else -> digitToInt()
         }
@@ -76,19 +89,90 @@ object `7` : Day {
                 compareBy({
                     it.type().rank
                 }, {
-                    it.hand[0].cardToScore()
-                }, { it.hand[1].cardToScore() }, { it.hand[2].cardToScore() }, { it.hand[3].cardToScore() }, { it.hand[4].cardToScore() }),
+                    it.hand[0].cardToScoreFirstSolution()
+                }, {
+                    it.hand[1].cardToScoreFirstSolution()
+                }, { it.hand[2].cardToScoreFirstSolution() }, { it.hand[3].cardToScoreFirstSolution() }, { it.hand[4].cardToScoreFirstSolution() }),
             )
-
-        res.forEach {
-            println(it.hand to it.type())
-        }
 
         return res.mapIndexed { index, hand -> (index + 1) * hand.bid }.sum().toString()
     }
 
+    private fun Collection<Hand>.getBestHand() =
+        this.sortedWith(
+            compareBy({
+                it.type().rank
+            }, {
+                it.hand[0].cardToScoreSecondSolution()
+            }, {
+                it.hand[1].cardToScoreSecondSolution()
+            }, { it.hand[2].cardToScoreSecondSolution() }, { it.hand[3].cardToScoreSecondSolution() }, { it.hand[4].cardToScoreSecondSolution() }),
+        ).last()
+
+    private fun Hand.replaceFirstJWithAllPossibilities() =
+        listOf(
+            Hand(hand = this.hand.replaceFirst('J', '2'), bid = this.bid, originalHand = this.originalHand),
+            Hand(hand = this.hand.replaceFirst('J', '3'), bid = this.bid, originalHand = this.originalHand),
+            Hand(hand = this.hand.replaceFirst('J', '4'), bid = this.bid, originalHand = this.originalHand),
+            Hand(hand = this.hand.replaceFirst('J', '5'), bid = this.bid, originalHand = this.originalHand),
+            Hand(hand = this.hand.replaceFirst('J', '6'), bid = this.bid, originalHand = this.originalHand),
+            Hand(hand = this.hand.replaceFirst('J', '7'), bid = this.bid, originalHand = this.originalHand),
+            Hand(hand = this.hand.replaceFirst('J', '8'), bid = this.bid, originalHand = this.originalHand),
+            Hand(hand = this.hand.replaceFirst('J', '9'), bid = this.bid, originalHand = this.originalHand),
+            Hand(hand = this.hand.replaceFirst('J', 'T'), bid = this.bid, originalHand = this.originalHand),
+            Hand(hand = this.hand.replaceFirst('J', 'Q'), bid = this.bid, originalHand = this.originalHand),
+            Hand(hand = this.hand.replaceFirst('J', 'K'), bid = this.bid, originalHand = this.originalHand),
+            Hand(hand = this.hand.replaceFirst('J', 'A'), bid = this.bid, originalHand = this.originalHand),
+        )
+
+    private fun Hand.replaceAllJWithAllPossibilities() =
+        if (this.hand.contains('J')) {
+            val res = mutableListOf<Hand>()
+            res.addAll(this.replaceFirstJWithAllPossibilities())
+            while (res.any { it.hand.contains('J') }) {
+                val newHands = mutableListOf<Hand>()
+
+                res.forEach { hand ->
+                    if (hand.hand.contains('J')) {
+                        newHands.addAll(hand.replaceFirstJWithAllPossibilities())
+                    } else {
+                        newHands.add(hand)
+                    }
+                }
+                res.clear()
+                res.addAll(newHands)
+            }
+
+            res
+        } else {
+            listOf(this)
+        }
+
     override fun secondSolution(input: List<String>): String {
-        return ""
+        val res =
+            input.map {
+                it.split(" ").filter { it.isNotBlank() }.let { row ->
+                    val cards = row.first()
+                    val hands =
+                        Hand(cards, row.last().toLong()).replaceAllJWithAllPossibilities()
+                    hands.getBestHand()
+                }
+            }
+
+        return res.sortedWith(
+            compareBy({
+                it.type().rank
+            }, {
+                it.originalHand[0].cardToScoreSecondSolution()
+            }, {
+                it.originalHand[1].cardToScoreSecondSolution()
+            }, {
+                it.originalHand[2].cardToScoreSecondSolution()
+            }, { it.originalHand[3].cardToScoreSecondSolution() }, { it.originalHand[4].cardToScoreSecondSolution() }),
+        ).let {
+            println(it)
+            it
+        }.mapIndexed { index, hand -> (index + 1) * hand.bid }.sum().toString()
     }
 
     override fun input() =

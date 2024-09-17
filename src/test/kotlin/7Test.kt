@@ -12,7 +12,9 @@ class `7Test` {
     @Test
     fun secondSolution() {
         assertEquals("5905", `7`.secondSolution(testInput))
-        // assertEquals("...", `7`.secondSolution())
+        assertEquals("500", `7`.secondSolution(listOf("JJJJJ 100", "KKKKK 200")))
+        assertEquals("500", `7`.secondSolution(listOf("JJJJJ 100", "JJ8JJ 200")))
+        assertEquals("250825971", `7`.secondSolution())
     }
 
     private val testInput =
